@@ -1,6 +1,7 @@
 def criar_conta(agencia, qtde_conta, cpf, contas):
+    senha = input("Informe uma senha de 4 digitos: ")
     qtde_conta = qtde_conta + 1
-    contas.append({"agencia":agencia, "conta" : qtde_conta, "cpf" : cpf})
+    contas.append({"agencia":agencia, "conta" : qtde_conta, "cpf" : cpf, "senha" : senha})
     print("\n Conta Criada Com Sucesso")
 
 def criarUsuario(usuarios):
@@ -10,15 +11,24 @@ def criarUsuario(usuarios):
     if existe_usuario:
         print("\n Já existe usuario com esse cpf")
         return ''
-        
-    nome = input("Digite o seu nome completo: ")
-    data_nascimento = input("Informe a sua data de nascimento: (dd-mm-aaaa) ")
-    endereco = input("Informe o endereço completo: Rua, n°, Municipio/Estado ")
-    usuarios.append({"nome":nome, "nasc" : data_nascimento, "cpf" : cpf, "endereco": endereco})
-    return cpf
+    else:    
+        nome = input("Digite o seu nome completo: ")
+        data_nascimento = input("Informe a sua data de nascimento: (dd-mm-aaaa) ")
+        endereco = input("Informe o endereço completo: Rua, n°, Municipio/Estado ")
+        usuarios.append({"nome":nome, "nasc" : data_nascimento, "cpf" : cpf, "endereco": endereco})
+        return cpf
+
 def filtrar_usuarios(cpf, usuarios):
     usuarios_filtrados = [usuarios for usuarios in usuarios if usuarios["cpf"] == cpf]
     return usuarios_filtrados[0] if usuarios_filtrados else None
+
+def verifica_login(cpf, contas, senha):
+    contas_filtradas = [contas for contas in contas if contas["cpf"] == cpf]
+    if contas_filtradas:
+        if contas_filtradas[0]['senha'] == senha:
+            return contas_filtradas[0] 
+        else:
+            return None
 
 def extratoCompleto(extrato, saldo):
     if extrato == '':
@@ -96,8 +106,8 @@ while execute:
         print("")
         escolha = input("Digite o número da operação: ")
         if escolha == '4':
-            print("Ok, nos veremos na proxima")
-            break
+            logado = 0
+            continue
 
         if escolha not in ('1', '2', '3'):
             print("Escolha inválida. Por favor, escolha uma opção válida.")
@@ -137,9 +147,18 @@ while execute:
             
         if escolha_login == '1':
             cpf = criarUsuario(usuarios)
-            criar_conta(agencia, qtde_conta, cpf, contas)
+            if cpf != '':
+                criar_conta(agencia, qtde_conta, cpf, contas)
         
         if escolha_login == '2':
-            print('entrar')
-        
-        
+            cpf = input("Informe o seu cpf: ")
+            senha = input("Informe uma senha de 4 digitos: ")
+            conta = verifica_login(cpf, contas, senha)
+            if conta is None:
+                print("Conta não localizada")
+            else:
+                usuario = filtrar_usuarios(conta['cpf'], usuarios)
+                print(f"Olá {usuario['nome']}, você esta logado ")
+                logado = 1
+
+
